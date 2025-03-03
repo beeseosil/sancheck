@@ -4,6 +4,7 @@ import Http from 'node:http'
 import Https from 'node:https'
 import Path from 'node:path'
 import {readFileSync} from 'node:fs'
+import cors from 'cors'
 import {
   basePath,
   keyChain,
@@ -38,6 +39,7 @@ const dog=Path.join(basePath,'./public/dog.png')
 process.chdir(basePath)
 claim(`Running At: ${basePath}`)
 
+app.use(cors())
 app.use(Limit({windowMs:1000*10,max:100}))
 app.use(Express.static('./public'))
 app.use(Express.json())
@@ -66,20 +68,23 @@ app.use((req,res)=>{
 })
 
 const ports=[4430,8023]
-const addr='0.0.0.0'
+const addrs=['0.0.0.0', 'localhost']
 
 let server
 let port
+let addr
 
 try {
   const httpsCert=new Cert()
   server=Https.createServer(httpsCert,app)
   port=ports[0]
+  addr=addrs[0]
 }
 catch (err) {
   claim(`HTTP Fallback: ${err.message}`)
   server=Http.createServer(app)
   port=ports[1]
+  addr=addrs[1]
 }
 finally {
   server.listen(port,addr,()=>{

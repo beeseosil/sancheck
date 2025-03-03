@@ -11,7 +11,8 @@ import {
 import Project from './project.mjs'
 
 const router=Express.Router()
-const path='./kura'
+const path='./public'
+// const path='./kura'
 
 router.route("/")
   .get((req,res)=>{
